@@ -1,3 +1,12 @@
+import {
+  easternDateKey,
+  hashSeed,
+  randomFromSeed,
+  shuffled,
+} from "@daily-games/game-core";
+
+export { daysBetweenDateKeys, easternDateKey } from "@daily-games/game-core";
+
 export type Difficulty = "easy" | "medium" | "hard";
 export type GameMode = "daily" | "practice";
 export type CellMark = "empty" | "x" | "crown";
@@ -19,57 +28,10 @@ export const SIZE_BY_DIFFICULTY: Record<Difficulty, 6 | 7 | 8> = {
   hard: 8,
 };
 
-const EASTERN_TIME_ZONE = "America/New_York";
-
-export function easternDateKey(date = new Date()): string {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: EASTERN_TIME_ZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(date);
-  const value = (type: string) => parts.find((part) => part.type === type)?.value;
-  return `${value("year")}-${value("month")}-${value("day")}`;
-}
-
-export function daysBetweenDateKeys(a: string, b: string): number {
-  return Math.round(
-    (Date.parse(`${b}T12:00:00Z`) - Date.parse(`${a}T12:00:00Z`)) / 86_400_000,
-  );
-}
-
 export function dailyDifficulty(dateKey: string): Difficulty {
   const epoch = Date.parse("2026-01-01T12:00:00Z");
   const offset = Math.floor((Date.parse(`${dateKey}T12:00:00Z`) - epoch) / 86_400_000);
   return (["easy", "medium", "hard"] as const)[((offset % 3) + 3) % 3];
-}
-
-function hashSeed(input: string): number {
-  let hash = 2166136261;
-  for (let index = 0; index < input.length; index += 1) {
-    hash ^= input.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-function randomFromSeed(seed: number): () => number {
-  return () => {
-    seed |= 0;
-    seed = (seed + 0x6d2b79f5) | 0;
-    let result = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    result = (result + Math.imul(result ^ (result >>> 7), 61 | result)) ^ result;
-    return ((result ^ (result >>> 14)) >>> 0) / 4_294_967_296;
-  };
-}
-
-function shuffled<T>(items: readonly T[], random: () => number): T[] {
-  const result = [...items];
-  for (let index = result.length - 1; index > 0; index -= 1) {
-    const swap = Math.floor(random() * (index + 1));
-    [result[index], result[swap]] = [result[swap], result[index]];
-  }
-  return result;
 }
 
 function orthogonalNeighbors(index: number, size: number): number[] {

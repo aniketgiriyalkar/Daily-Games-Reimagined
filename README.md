@@ -1,6 +1,6 @@
 # Daily Games Reimagined
 
-An offline-first collection of short, polished logic games for Aniket Giriyalkar's portfolio. Queens-Reimagined is the first release; Mini Sudoku, Tango, Zip, Patches, Wend, Crossclimb, and Pinpoint follow as independent static apps in the same workspace.
+An offline-first collection of short, polished logic games for Aniket Giriyalkar's portfolio. Queens-Reimagined and Mini Sudoku-Reimagined are live; Tango, Zip, Patches, Wend, Crossclimb, and Pinpoint follow as independent static apps in the same workspace.
 
 ## Queens-Reimagined
 
@@ -20,3 +20,10 @@ npm run check
 ```
 
 The production artifact is generated in `out/`. The portfolio repository vendors that artifact into `public/games/queens-reimagined/` before its own static build.
+
+## Mini Sudoku-Reimagined
+
+- 6×6 daily Sudoku with deterministic Eastern-time rollover.
+- Relaxed, Focused, and Expert practice modes with uniquely solvable boards.
+- Notes, hints, duplicate checking, undo, keyboard controls, local progress, and streaks.
+- Static export in `apps/mini-sudoku/out/`, configured for `/games/mini-sudoku-reimagined/`.
