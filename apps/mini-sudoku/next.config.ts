@@ -3,8 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "export",
   trailingSlash: true,
-  basePath: "/games/queens-reimagined",
-  assetPrefix: "/games/queens-reimagined",
+  basePath: "/games/mini-sudoku-reimagined",
+  assetPrefix: "/games/mini-sudoku-reimagined",
   images: { unoptimized: true },
   transpilePackages: ["@daily-games/game-core"],
 };

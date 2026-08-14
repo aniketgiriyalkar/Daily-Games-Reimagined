@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
+    "apps/*",
     "packages/*"
   ],
   "engines": {
@@ -10,13 +11,17 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "dev:mini-sudoku": "npm run dev -w @daily-games/mini-sudoku",
+    "build": "npm run build:queens && npm run build:mini-sudoku",
+    "build:queens": "next build --webpack",
+    "build:mini-sudoku": "npm run build -w @daily-games/mini-sudoku",
     "start": "npx serve out",
     "test": "node --test tests/*.test.ts",
     "check": "npm run test && npm run lint && npm run build",
     "lint": "eslint . --ignore-pattern out --ignore-pattern .next"
   },
   "dependencies": {
+    "@daily-games/game-core": "*",
     "next": "16.2.6",
     "react": "19.2.6",
     "react-dom": "19.2.6"
