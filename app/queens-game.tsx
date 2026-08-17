@@ -264,6 +264,31 @@ export default function QueensGame() {
     commitMarks(Array(puzzle.size ** 2).fill("empty"));
   };
 
+  const startNewBoard = () => {
+    const nextIndex = practiceIndex + 1;
+    const nextPuzzle = createPuzzle({
+      mode: "practice",
+      difficulty,
+      practiceIndex: nextIndex,
+      dailyKey: dateKey,
+    });
+    try {
+      localStorage.removeItem(gameStorageKey(nextPuzzle));
+    } catch {
+      // A fresh in-memory board still works when storage is unavailable.
+    }
+    setMarks(Array(nextPuzzle.size ** 2).fill("empty"));
+    setHistory([]);
+    setElapsed(0);
+    setStarted(false);
+    setHints(0);
+    setHintCell(null);
+    setCompleted(false);
+    completedRef.current = false;
+    setToast("Fresh board ready.");
+    setPracticeIndex(nextIndex);
+  };
+
   const hint = () => {
     const incorrect = marks.findIndex(
       (mark, index) => mark === "crown" && puzzle.solution[Math.floor(index / puzzle.size)] !== index % puzzle.size,
@@ -353,7 +378,7 @@ export default function QueensGame() {
               {(["easy", "medium", "hard"] as const).map((level) => (
                 <button key={level} onClick={() => setDifficulty(level)} aria-pressed={difficulty === level}>{level}</button>
               ))}
-              <button className="new-puzzle" onClick={() => setPracticeIndex((value) => value + 1)}>New board ↗</button>
+              <button className="new-puzzle" onClick={startNewBoard}>New board ↗</button>
             </div>
           )}
 
@@ -422,7 +447,7 @@ export default function QueensGame() {
               <p>{hints ? `${hints} hint${hints === 1 ? "" : "s"} used.` : "Solved without a hint."} {mode === "daily" ? `Your streak is ${stats.currentStreak}.` : "Practice does not change your daily streak."}</p>
               <div>
                 <button onClick={share}>Share result</button>
-                {mode === "practice" && <button onClick={() => setPracticeIndex((value) => value + 1)}>Next board</button>}
+                {mode === "practice" && <button onClick={startNewBoard}>Next board</button>}
               </div>
             </div>
           )}
