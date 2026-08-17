@@ -15,7 +15,8 @@ import {
 } from "@/lib/queens";
 
 const STORAGE = {
-  settings: "queens-reimagined:v1:settings",
+  settings: "queens-reimagined:v2:settings",
+  legacySettings: "queens-reimagined:v1:settings",
   stats: "queens-reimagined:v1:stats",
 };
 
@@ -23,6 +24,8 @@ interface Settings {
   autoCheck: boolean;
   autoXs: boolean;
 }
+
+const DEFAULT_SETTINGS: Settings = { autoCheck: true, autoXs: false };
 
 interface SavedGame {
   puzzleId: string;
@@ -90,7 +93,7 @@ export default function QueensGame() {
   );
   const [marks, setMarks] = useState<CellMark[]>(() => Array(puzzle.size ** 2).fill("empty"));
   const [history, setHistory] = useState<CellMark[][]>([]);
-  const [settings, setSettings] = useState<Settings>({ autoCheck: true, autoXs: true });
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [elapsed, setElapsed] = useState(0);
   const [started, setStarted] = useState(false);
   const [hints, setHints] = useState(0);
@@ -103,7 +106,13 @@ export default function QueensGame() {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      setSettings(readJson(STORAGE.settings, { autoCheck: true, autoXs: true }));
+      const savedSettings = readJson<Settings | null>(STORAGE.settings, null);
+      if (savedSettings) {
+        setSettings(savedSettings);
+      } else {
+        const legacySettings = readJson<Settings>(STORAGE.legacySettings, DEFAULT_SETTINGS);
+        setSettings({ autoCheck: legacySettings.autoCheck, autoXs: false });
+      }
       setStats(readJson(STORAGE.stats, DEFAULT_STATS));
       setHydrated(true);
     }, 0);
