@@ -285,6 +285,33 @@ export default function MiniSudokuGame() {
     setHintCell(null);
   };
 
+  const startNewGrid = () => {
+    const nextIndex = practiceIndex + 1;
+    const nextPuzzle = createMiniSudoku({
+      mode: "practice",
+      difficulty,
+      practiceIndex: nextIndex,
+      dailyKey: dateKey,
+    });
+    try {
+      localStorage.removeItem(gameKey(nextPuzzle));
+    } catch {
+      // A fresh in-memory board still works when storage is unavailable.
+    }
+    setValues([...nextPuzzle.givens]);
+    setNotes(Array.from({ length: 36 }, () => []));
+    setSelected(null);
+    setHistory([]);
+    setElapsed(0);
+    setStarted(false);
+    setHints(0);
+    setHintCell(null);
+    setCompleted(false);
+    completedRef.current = false;
+    setToast("Fresh grid ready.");
+    setPracticeIndex(nextIndex);
+  };
+
   const hint = () => {
     const incorrect = values.findIndex((value, index) => value && value !== puzzle.solution[index]);
     const target = incorrect >= 0
@@ -377,7 +404,7 @@ export default function MiniSudokuGame() {
               {(["relaxed", "focused", "expert"] as const).map((level) => (
                 <button key={level} onClick={() => setDifficulty(level)} aria-pressed={difficulty === level}>{level}</button>
               ))}
-              <button className="new-puzzle" onClick={() => setPracticeIndex((value) => value + 1)}>New grid ↗</button>
+              <button className="new-puzzle" onClick={startNewGrid}>New grid ↗</button>
             </div>
           )}
           <div className="settings-list">
@@ -444,7 +471,7 @@ export default function MiniSudokuGame() {
               <p className="eyebrow">Grid complete</p>
               <h2>All six, everywhere.</h2>
               <p>Finished in {displayTime(elapsed)} with {hints} hint{hints === 1 ? "" : "s"}. {mode === "daily" ? `Your streak is ${stats.currentStreak}.` : "Practice leaves your daily streak untouched."}</p>
-              <div><button onClick={share}>Share result</button>{mode === "practice" && <button onClick={() => setPracticeIndex((value) => value + 1)}>Next grid</button>}</div>
+              <div><button onClick={share}>Share result</button>{mode === "practice" && <button onClick={startNewGrid}>Next grid</button>}</div>
             </div>
           )}
         </section>
